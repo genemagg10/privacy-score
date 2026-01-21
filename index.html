@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Score - Know What They Know</title>
+    <title>Privacy Score - Understand Your Browser's Digital Footprint</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,23 +15,27 @@
         }
 
         :root {
-            --primary-blue: #0066ff;
-            --primary-green: #00d4aa;
-            --dark-bg: #0a0f1c;
-            --card-bg: #121a2e;
-            --card-border: #1e2a45;
-            --text-primary: #ffffff;
-            --text-secondary: #8892a6;
-            --danger: #ff4757;
-            --warning: #ffa502;
-            --success: #00d4aa;
-            --gradient-1: linear-gradient(135deg, #0066ff 0%, #00d4aa 100%);
-            --gradient-2: linear-gradient(135deg, #121a2e 0%, #1a2540 100%);
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --accent-teal: #14b8a6;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --gradient-hero: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+            --gradient-card: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+            --gradient-score: linear-gradient(135deg, #3b82f6 0%, #14b8a6 50%, #10b981 100%);
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--dark-bg);
+            background: var(--light-bg);
             color: var(--text-primary);
             min-height: 100vh;
             line-height: 1.6;
@@ -40,17 +44,17 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
         /* Header */
         header {
-            padding: 20px 0;
+            padding: 16px 0;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 15, 28, 0.9);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(20px);
             z-index: 1000;
             border-bottom: 1px solid var(--card-border);
@@ -65,135 +69,195 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.5rem;
-            font-weight: 700;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--gradient-1);
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-hero);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-size: 1.1rem;
         }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 32px;
         }
 
         .nav-links a {
             color: var(--text-secondary);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s;
+            font-size: 0.9rem;
+            transition: color 0.2s;
         }
 
         .nav-links a:hover {
-            color: var(--primary-green);
+            color: var(--primary-blue);
         }
 
         /* Hero Section */
         .hero {
-            padding: 150px 0 80px;
+            padding: 120px 0 60px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            background: linear-gradient(180deg, rgba(59, 130, 246, 0.03) 0%, transparent 100%);
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(0, 102, 255, 0.15) 0%, transparent 70%);
-            pointer-events: none;
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--gradient-card);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            font-weight: 800;
-            margin-bottom: 20px;
-            background: var(--gradient-1);
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-hero);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .hero p {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto 40px;
+            max-width: 640px;
+            margin: 0 auto 16px;
         }
 
-        /* Score Circle */
-        .score-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 60px 0;
+        .hero-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-        .score-circle {
-            width: 220px;
-            height: 220px;
+        /* Score Dashboard */
+        .score-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 32px;
+            margin: 48px 0;
+            align-items: start;
+        }
+
+        .score-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--card-border);
+            text-align: center;
+        }
+
+        .score-circle-wrapper {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 24px;
+        }
+
+        .score-circle-bg {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            background: var(--card-bg);
+            background: var(--gradient-card);
+            border: 1px solid var(--card-border);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: 0 0 60px rgba(0, 102, 255, 0.3);
         }
 
-        .score-circle::before {
-            content: '';
+        .score-ring {
             position: absolute;
             inset: -4px;
             border-radius: 50%;
-            background: var(--gradient-1);
-            z-index: -1;
+            background: var(--gradient-score);
+            opacity: 0.15;
         }
 
         .score-number {
-            font-size: 4rem;
-            font-weight: 800;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             line-height: 1;
         }
 
         .score-label {
-            font-size: 1rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
-            margin-top: 8px;
+            margin-top: 4px;
         }
 
         .score-status {
-            margin-top: 20px;
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 500;
             font-size: 0.9rem;
+            margin-bottom: 20px;
         }
 
-        .score-status.poor { background: rgba(255, 71, 87, 0.2); color: var(--danger); }
-        .score-status.fair { background: rgba(255, 165, 2, 0.2); color: var(--warning); }
-        .score-status.good { background: rgba(0, 212, 170, 0.2); color: var(--success); }
+        .score-status.excellent { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .score-status.good { background: rgba(59, 130, 246, 0.1); color: var(--primary-blue); }
+        .score-status.fair { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .score-status.poor { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
-        /* Scanning Animation */
+        .score-explanation {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
         .scanning {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-top: 30px;
-            color: var(--text-secondary);
+            justify-content: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 16px;
         }
 
         .scanning-dots {
@@ -202,8 +266,8 @@
         }
 
         .scanning-dots span {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: var(--primary-blue);
             border-radius: 50%;
             animation: pulse 1.4s infinite ease-in-out;
@@ -217,53 +281,187 @@
             40% { transform: scale(1); opacity: 1; }
         }
 
-        /* Data Cards Grid */
-        .data-grid {
+        /* Score Factors */
+        .score-factors {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 20px 40px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--card-border);
+        }
+
+        .factors-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .factors-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .factors-header span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .factor-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .factor-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .factor-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .factor-icon.positive { background: rgba(16, 185, 129, 0.1); }
+        .factor-icon.neutral { background: rgba(59, 130, 246, 0.1); }
+        .factor-icon.negative { background: rgba(239, 68, 68, 0.1); }
+
+        .factor-content {
+            flex: 1;
+        }
+
+        .factor-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .factor-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .factor-impact {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .factor-impact.positive { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .factor-impact.neutral { background: rgba(100, 116, 139, 0.1); color: var(--text-secondary); }
+        .factor-impact.negative { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .section-header p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Learn Section */
+        .learn-section {
+            padding: 60px 0;
+        }
+
+        /* Data Dashboard Grid */
+        .data-dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
             gap: 24px;
-            margin: 60px 0;
+            margin-bottom: 60px;
         }
 
         .data-card {
-            background: var(--gradient-2);
+            background: var(--white);
             border: 1px solid var(--card-border);
             border-radius: 16px;
-            padding: 28px;
-            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
         }
 
         .data-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
         }
 
         .card-header {
             display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 20px;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 24px 24px 0;
         }
 
         .card-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--gradient-1);
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-hero);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .card-title-group {
+            flex: 1;
         }
 
         .card-title {
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
         .card-subtitle {
             font-size: 0.85rem;
             color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .card-learn-more {
+            font-size: 0.8rem;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        .card-learn-more:hover {
+            text-decoration: underline;
+        }
+
+        .card-body {
+            padding: 20px 24px 24px;
         }
 
         .data-item {
@@ -276,6 +474,7 @@
 
         .data-item:last-child {
             border-bottom: none;
+            padding-bottom: 0;
         }
 
         .data-label {
@@ -285,107 +484,80 @@
 
         .data-value {
             font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-primary);
             text-align: right;
-            max-width: 60%;
+            max-width: 55%;
             word-break: break-word;
         }
 
-        .risk-badge {
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             padding: 4px 10px;
             border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
 
-        .risk-high { background: rgba(255, 71, 87, 0.2); color: var(--danger); }
-        .risk-medium { background: rgba(255, 165, 2, 0.2); color: var(--warning); }
-        .risk-low { background: rgba(0, 212, 170, 0.2); color: var(--success); }
+        .status-badge.protected { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .status-badge.exposed { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .status-badge.concern { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
-        /* Recommendations Section */
-        .recommendations {
-            background: var(--gradient-2);
+        /* Educational Callout */
+        .edu-callout {
+            background: var(--gradient-card);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 60px 0;
-        }
-
-        .recommendations h2 {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .rec-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .rec-item {
-            background: rgba(0, 102, 255, 0.1);
-            border: 1px solid rgba(0, 102, 255, 0.2);
             border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            gap: 16px;
-            transition: background 0.3s;
+            padding: 16px;
+            margin-top: 16px;
         }
 
-        .rec-item:hover {
-            background: rgba(0, 102, 255, 0.15);
-        }
-
-        .rec-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--gradient-1);
-            border-radius: 10px;
+        .edu-callout-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            gap: 6px;
         }
 
-        .rec-content h4 {
-            font-size: 1rem;
-            margin-bottom: 6px;
-        }
-
-        .rec-content p {
+        .edu-callout-text {
             font-size: 0.85rem;
             color: var(--text-secondary);
+            line-height: 1.5;
         }
 
         /* Social Detection */
         .social-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 16px;
+            gap: 10px;
+            margin-top: 8px;
         }
 
         .social-badge {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(0, 212, 170, 0.1);
-            border: 1px solid rgba(0, 212, 170, 0.3);
+            gap: 6px;
+            padding: 8px 14px;
             border-radius: 25px;
-            font-size: 0.9rem;
-        }
-
-        .social-badge.detected {
-            background: rgba(255, 71, 87, 0.1);
-            border-color: rgba(255, 71, 87, 0.3);
+            font-size: 0.85rem;
+            font-weight: 500;
         }
 
         .social-badge.not-detected {
-            background: rgba(0, 212, 170, 0.1);
-            border-color: rgba(0, 212, 170, 0.3);
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .social-badge.detected {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--warning);
         }
 
         /* Canvas Fingerprint */
@@ -395,18 +567,123 @@
 
         .fingerprint-visual {
             width: 100%;
-            height: 60px;
-            background: var(--dark-bg);
-            border-radius: 8px;
-            margin-top: 16px;
+            height: 8px;
+            background: var(--card-border);
+            border-radius: 4px;
+            margin-top: 12px;
             overflow: hidden;
-            position: relative;
         }
 
         .fingerprint-bar {
             height: 100%;
-            background: var(--gradient-1);
+            background: var(--gradient-hero);
+            border-radius: 4px;
             transition: width 1s ease-out;
+        }
+
+        /* Improve Section */
+        .improve-section {
+            padding: 60px 0;
+            background: var(--white);
+        }
+
+        .improve-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .improve-item {
+            background: var(--light-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .improve-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .improve-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-hero);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+        }
+
+        .improve-item h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .improve-item p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .improve-difficulty {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        /* How It Works Section */
+        .how-section {
+            padding: 60px 0;
+        }
+
+        .how-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .how-card {
+            background: var(--white);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .how-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .how-card h3 span {
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-hero);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        .how-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
         }
 
         /* Footer */
@@ -414,124 +691,72 @@
             text-align: center;
             padding: 40px 0;
             border-top: 1px solid var(--card-border);
+            background: var(--white);
+        }
+
+        footer p {
             color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer .footer-highlight {
+            color: var(--primary-blue);
+            font-weight: 500;
+        }
+
+        footer .footer-links {
+            margin-top: 12px;
+            font-size: 0.85rem;
         }
 
         footer a {
-            color: var(--primary-green);
+            color: var(--primary-blue);
             text-decoration: none;
         }
 
-        /* Easter Egg */
-        .easter-egg {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 15, 28, 0.95);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 20px;
-            animation: fadeIn 0.5s;
-        }
-
-        .easter-egg.active {
-            display: flex;
-        }
-
-        .easter-egg h2 {
-            font-size: 2rem;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .easter-egg p {
-            color: var(--text-secondary);
-            max-width: 500px;
-            text-align: center;
-        }
-
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1999;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        .matrix-bg.active {
-            opacity: 1;
-        }
-
-        .close-easter {
-            margin-top: 20px;
-            padding: 12px 30px;
-            background: var(--gradient-1);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        footer a:hover {
+            text-decoration: underline;
         }
 
         /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .score-dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
             }
 
             .hero {
-                padding: 120px 0 60px;
+                padding: 100px 0 40px;
             }
 
             .hero h1 {
-                font-size: 2rem;
+                font-size: 1.75rem;
             }
 
             .hero p {
                 font-size: 1rem;
             }
 
-            .score-circle {
-                width: 180px;
-                height: 180px;
-            }
-
-            .score-number {
-                font-size: 3rem;
-            }
-
-            .data-grid {
+            .data-dashboard {
                 grid-template-columns: 1fr;
             }
 
-            .data-card {
-                padding: 20px;
-            }
-
-            .recommendations {
+            .score-card, .score-factors {
                 padding: 24px;
             }
 
-            .rec-grid {
-                grid-template-columns: 1fr;
+            .score-circle-wrapper {
+                width: 150px;
+                height: 150px;
             }
 
-            .data-value {
-                max-width: 50%;
-                font-size: 0.85rem;
+            .score-number {
+                font-size: 2.75rem;
             }
         }
 
@@ -541,17 +766,7 @@
             }
 
             .logo {
-                font-size: 1.2rem;
-            }
-
-            .logo-icon {
-                width: 32px;
-                height: 32px;
-            }
-
-            .card-header {
-                flex-direction: column;
-                text-align: center;
+                font-size: 1.1rem;
             }
 
             .data-item {
@@ -562,47 +777,22 @@
 
             .data-value {
                 max-width: 100%;
+                text-align: left;
             }
-        }
-
-        /* Konami visual hint */
-        .konami-hint {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            opacity: 0;
-            transition: opacity 0.3s;
-            cursor: help;
-        }
-
-        .konami-hint.show {
-            opacity: 0.6;
-        }
-
-        .konami-hint:hover {
-            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <canvas id="matrix-canvas" class="matrix-bg"></canvas>
-
     <header>
         <div class="container header-content">
             <div class="logo">
-                <div class="logo-icon">🛡️</div>
-                <span>PrivacyScore</span>
+                <div class="logo-icon">PS</div>
+                <span>Privacy Score</span>
             </div>
             <nav class="nav-links">
                 <a href="#score">Your Score</a>
-                <a href="#data">Your Data</a>
-                <a href="#tips">Privacy Tips</a>
+                <a href="#learn">How It Works</a>
+                <a href="#improve">Improve</a>
             </nav>
         </div>
     </header>
@@ -610,70 +800,99 @@
     <main>
         <section class="hero">
             <div class="container">
-                <h1>Know What They Know About You</h1>
-                <p>Every website you visit learns more about you than you think. See exactly what information you're exposing and how to protect yourself.</p>
-
-                <div class="score-container" id="score">
-                    <div class="score-circle">
-                        <span class="score-number" id="privacy-score">--</span>
-                        <span class="score-label">Privacy Score</span>
-                    </div>
-                    <div class="score-status" id="score-status">Calculating...</div>
-                    <div class="scanning" id="scanning">
-                        <div class="scanning-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    <span>100% Safe - No traffic or browser data stored. Ever.</span>
+                </div>
+                <h1>Understand Your Browser's <span>Digital Footprint</span></h1>
+                <p>Every time you visit a website, your browser shares information about you. Learn what data is visible, why it matters, and how you can take control.</p>
+                <p class="hero-subtitle">This educational tool shows you exactly what websites can see - no tracking, no data collection.</p>
+            </div>
+        </section>
+        <section id="score">
+            <div class="container">
+                <div class="score-dashboard">
+                    <div class="score-card">
+                        <div class="score-circle-wrapper">
+                            <div class="score-ring"></div>
+                            <div class="score-circle-bg">
+                                <span class="score-number" id="privacy-score">--</span>
+                                <span class="score-label">out of 100</span>
+                            </div>
                         </div>
-                        <span>Analyzing your digital footprint...</span>
+                        <div class="score-status" id="score-status">Analyzing...</div>
+                        <p class="score-explanation" id="score-explanation">
+                            Your privacy score reflects how much information your browser reveals to websites. A higher score means better privacy protection.
+                        </p>
+                        <div class="scanning" id="scanning">
+                            <div class="scanning-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <span>Analyzing your browser configuration...</span>
+                        </div>
+                    </div>
+
+                    <div class="score-factors">
+                        <div class="factors-header">
+                            <h3>What's Affecting Your Score</h3>
+                            <span id="factors-count">Checking factors...</span>
+                        </div>
+                        <div id="factors-list">
+                            <!-- Populated by JavaScript -->
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="data">
+        <section id="learn" class="learn-section">
             <div class="container">
-                <div class="data-grid">
+                <div class="section-header">
+                    <h2>What Your Browser Reveals</h2>
+                    <p>Websites can access various types of information through your browser. Here's a transparent look at what's visible and why.</p>
+                </div>
+
+                <div class="data-dashboard">
                     <!-- Browser & Device Card -->
                     <div class="data-card">
                         <div class="card-header">
                             <div class="card-icon">💻</div>
-                            <div>
+                            <div class="card-title-group">
                                 <div class="card-title">Browser & Device</div>
-                                <div class="card-subtitle">Hardware and software fingerprint</div>
+                                <div class="card-subtitle">Basic information your browser sends with every request to help websites display content correctly.</div>
                             </div>
                         </div>
-                        <div class="data-item">
-                            <span class="data-label">Browser</span>
-                            <span class="data-value" id="browser-name">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Operating System</span>
-                            <span class="data-value" id="os-name">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Device Type</span>
-                            <span class="data-value" id="device-type">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Screen Resolution</span>
-                            <span class="data-value" id="screen-res">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Color Depth</span>
-                            <span class="data-value" id="color-depth">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Device Memory</span>
-                            <span class="data-value" id="device-memory">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">CPU Cores</span>
-                            <span class="data-value" id="cpu-cores">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Touch Support</span>
-                            <span class="data-value" id="touch-support">Detecting...</span>
+                        <div class="card-body">
+                            <div class="data-item">
+                                <span class="data-label">Browser</span>
+                                <span class="data-value" id="browser-name">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Operating System</span>
+                                <span class="data-value" id="os-name">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Device Type</span>
+                                <span class="data-value" id="device-type">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Screen Resolution</span>
+                                <span class="data-value" id="screen-res">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Color Depth</span>
+                                <span class="data-value" id="color-depth">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">CPU Cores</span>
+                                <span class="data-value" id="cpu-cores">Detecting...</span>
+                            </div>
+                            <div class="edu-callout">
+                                <div class="edu-callout-title">💡 Why this is shared</div>
+                                <div class="edu-callout-text">Websites use this info to optimize their layout and performance. For example, a site might load lighter images on mobile or adjust features based on your screen size.</div>
+                            </div>
                         </div>
                     </div>
 
@@ -681,77 +900,81 @@
                     <div class="data-card">
                         <div class="card-header">
                             <div class="card-icon">🌐</div>
-                            <div>
+                            <div class="card-title-group">
                                 <div class="card-title">Network & Location</div>
-                                <div class="card-subtitle">Connection and geographic data</div>
+                                <div class="card-subtitle">Your IP address reveals your approximate location and internet provider to every website you visit.</div>
                             </div>
                         </div>
-                        <div class="data-item">
-                            <span class="data-label">IP Address</span>
-                            <span class="data-value" id="ip-address">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Approximate Location</span>
-                            <span class="data-value" id="location">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">ISP / Provider</span>
-                            <span class="data-value" id="isp">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Connection Type</span>
-                            <span class="data-value" id="connection-type">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Timezone</span>
-                            <span class="data-value" id="timezone">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Language</span>
-                            <span class="data-value" id="language">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">VPN Detected</span>
-                            <span class="data-value" id="vpn-status">Checking...</span>
+                        <div class="card-body">
+                            <div class="data-item">
+                                <span class="data-label">IP Address</span>
+                                <span class="data-value" id="ip-address">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Approximate Location</span>
+                                <span class="data-value" id="location">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Internet Provider</span>
+                                <span class="data-value" id="isp">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Timezone</span>
+                                <span class="data-value" id="timezone">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Language</span>
+                                <span class="data-value" id="language">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">VPN Detected</span>
+                                <span class="data-value" id="vpn-status">Checking...</span>
+                            </div>
+                            <div class="edu-callout">
+                                <div class="edu-callout-title">💡 How IP tracking works</div>
+                                <div class="edu-callout-text">Your IP address is like a return address on mail - websites need it to send you data. A VPN masks this by routing traffic through their servers instead.</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Tracking & Cookies Card -->
+                    <!-- Cookies & Storage Card -->
                     <div class="data-card">
                         <div class="card-header">
                             <div class="card-icon">🍪</div>
-                            <div>
-                                <div class="card-title">Tracking & Cookies</div>
-                                <div class="card-subtitle">How sites track you</div>
+                            <div class="card-title-group">
+                                <div class="card-title">Cookies & Storage</div>
+                                <div class="card-subtitle">Websites can store small files on your device to remember you and track your activity across sessions.</div>
                             </div>
                         </div>
-                        <div class="data-item">
-                            <span class="data-label">Cookies Enabled</span>
-                            <span class="data-value" id="cookies-enabled">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Third-Party Cookies</span>
-                            <span class="data-value" id="third-party-cookies">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Local Storage</span>
-                            <span class="data-value" id="local-storage">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Session Storage</span>
-                            <span class="data-value" id="session-storage">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">IndexedDB</span>
-                            <span class="data-value" id="indexed-db">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Do Not Track</span>
-                            <span class="data-value" id="dnt-status">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Ad Blocker</span>
-                            <span class="data-value" id="ad-blocker">Detecting...</span>
+                        <div class="card-body">
+                            <div class="data-item">
+                                <span class="data-label">Cookies Enabled</span>
+                                <span class="data-value" id="cookies-enabled">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Third-Party Cookies</span>
+                                <span class="data-value" id="third-party-cookies">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Local Storage</span>
+                                <span class="data-value" id="local-storage">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Session Storage</span>
+                                <span class="data-value" id="session-storage">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Do Not Track</span>
+                                <span class="data-value" id="dnt-status">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Ad Blocker</span>
+                                <span class="data-value" id="ad-blocker">Detecting...</span>
+                            </div>
+                            <div class="edu-callout">
+                                <div class="edu-callout-title">💡 First-party vs Third-party</div>
+                                <div class="edu-callout-text">First-party cookies (from the site you're on) remember your login. Third-party cookies (from advertisers) track you across different websites - these are the ones to watch out for.</div>
+                            </div>
                         </div>
                     </div>
 
@@ -759,108 +982,141 @@
                     <div class="data-card">
                         <div class="card-header">
                             <div class="card-icon">🔍</div>
-                            <div>
-                                <div class="card-title">Browser Fingerprint</div>
-                                <div class="card-subtitle">Unique identifier based on your setup</div>
+                            <div class="card-title-group">
+                                <div class="card-title">Browser Fingerprinting</div>
+                                <div class="card-subtitle">Websites can identify you by combining unique characteristics of your browser - even without cookies.</div>
                             </div>
                         </div>
-                        <div class="data-item">
-                            <span class="data-label">Canvas Fingerprint</span>
-                            <span class="data-value" id="canvas-fp">Generating...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">WebGL Renderer</span>
-                            <span class="data-value" id="webgl-renderer">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Audio Context</span>
-                            <span class="data-value" id="audio-fp">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Installed Fonts</span>
-                            <span class="data-value" id="fonts-count">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Installed Plugins</span>
-                            <span class="data-value" id="plugins-count">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Uniqueness Score</span>
-                            <span class="data-value" id="uniqueness">Calculating...</span>
-                        </div>
-                        <canvas id="canvas-fingerprint" width="200" height="50"></canvas>
-                        <div class="fingerprint-visual">
-                            <div class="fingerprint-bar" id="fp-bar"></div>
+                        <div class="card-body">
+                            <div class="data-item">
+                                <span class="data-label">Canvas Fingerprint</span>
+                                <span class="data-value" id="canvas-fp">Generating...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">WebGL Renderer</span>
+                                <span class="data-value" id="webgl-renderer">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Audio Fingerprint</span>
+                                <span class="data-value" id="audio-fp">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Detected Fonts</span>
+                                <span class="data-value" id="fonts-count">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Uniqueness</span>
+                                <span class="data-value" id="uniqueness">Calculating...</span>
+                            </div>
+                            <div class="fingerprint-visual">
+                                <div class="fingerprint-bar" id="fp-bar"></div>
+                            </div>
+                            <canvas id="canvas-fingerprint" width="200" height="50"></canvas>
+                            <div class="edu-callout">
+                                <div class="edu-callout-title">💡 What is fingerprinting?</div>
+                                <div class="edu-callout-text">Your combination of browser, fonts, graphics card, and settings creates a unique "fingerprint." Even if you clear cookies, this fingerprint can still identify you with high accuracy.</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Social Media Detection Card -->
+                    <!-- Social & Login Detection Card -->
                     <div class="data-card">
                         <div class="card-header">
                             <div class="card-icon">👤</div>
-                            <div>
-                                <div class="card-title">Social Media Detection</div>
-                                <div class="card-subtitle">Accounts you may be logged into</div>
+                            <div class="card-title-group">
+                                <div class="card-title">Social Media Connections</div>
+                                <div class="card-subtitle">Websites can sometimes detect which social platforms you're logged into through various browser signals.</div>
                             </div>
                         </div>
-                        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 12px;">
-                            Websites can detect if you're logged into social platforms through various techniques.
-                        </p>
-                        <div class="social-grid" id="social-detection">
-                            <!-- Populated by JavaScript -->
+                        <div class="card-body">
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 12px;">
+                                Checking for login indicators from common platforms:
+                            </p>
+                            <div class="social-grid" id="social-detection">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                            <div class="edu-callout">
+                                <div class="edu-callout-title">💡 How login detection works</div>
+                                <div class="edu-callout-text">When you stay logged into social sites, they can track your activity across the web through embedded buttons and widgets. Logging out when not using these platforms helps prevent this.</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Hardware & Sensors Card -->
+                    <!-- Hardware & Permissions Card -->
                     <div class="data-card">
                         <div class="card-header">
                             <div class="card-icon">📱</div>
-                            <div>
-                                <div class="card-title">Hardware & Sensors</div>
-                                <div class="card-subtitle">Physical device capabilities</div>
+                            <div class="card-title-group">
+                                <div class="card-title">Hardware & Permissions</div>
+                                <div class="card-subtitle">Modern websites can request access to your device's sensors and hardware for enhanced features.</div>
                             </div>
                         </div>
-                        <div class="data-item">
-                            <span class="data-label">Battery Level</span>
-                            <span class="data-value" id="battery-level">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Charging Status</span>
-                            <span class="data-value" id="charging-status">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Accelerometer</span>
-                            <span class="data-value" id="accelerometer">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Gyroscope</span>
-                            <span class="data-value" id="gyroscope">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Camera Access</span>
-                            <span class="data-value" id="camera-access">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Microphone Access</span>
-                            <span class="data-value" id="mic-access">Detecting...</span>
-                        </div>
-                        <div class="data-item">
-                            <span class="data-label">Geolocation</span>
-                            <span class="data-value" id="geolocation">Detecting...</span>
+                        <div class="card-body">
+                            <div class="data-item">
+                                <span class="data-label">Battery Status</span>
+                                <span class="data-value" id="battery-level">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Motion Sensors</span>
+                                <span class="data-value" id="accelerometer">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Camera Access</span>
+                                <span class="data-value" id="camera-access">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Microphone Access</span>
+                                <span class="data-value" id="mic-access">Detecting...</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Location Access</span>
+                                <span class="data-value" id="geolocation">Detecting...</span>
+                            </div>
+                            <div class="edu-callout">
+                                <div class="edu-callout-title">💡 Permission-based access</div>
+                                <div class="edu-callout-text">Unlike other data, your camera, microphone, and location require explicit permission. Your browser will always ask before granting access - be thoughtful about which sites you trust.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Recommendations Section -->
-        <section id="tips">
+        <!-- How It Works Section -->
+        <section class="how-section">
             <div class="container">
-                <div class="recommendations">
-                    <h2>🛡️ Improve Your Privacy</h2>
-                    <div class="rec-grid" id="recommendations-grid">
-                        <!-- Populated by JavaScript based on detected issues -->
+                <div class="section-header">
+                    <h2>How Web Tracking Works</h2>
+                    <p>Understanding the technology helps you make informed decisions about your privacy.</p>
+                </div>
+
+                <div class="how-grid">
+                    <div class="how-card">
+                        <h3><span>1</span> The Request</h3>
+                        <p>When you visit a website, your browser automatically sends basic information like your IP address, browser type, and language. This is necessary for the site to respond correctly - like knowing what language to display.</p>
                     </div>
+                    <div class="how-card">
+                        <h3><span>2</span> Cookies & Storage</h3>
+                        <p>Websites can save small files to your device. First-party cookies help you stay logged in. Third-party cookies from advertisers track you across different sites to build a profile of your interests.</p>
+                    </div>
+                    <div class="how-card">
+                        <h3><span>3</span> Fingerprinting</h3>
+                        <p>By combining many small details - your fonts, screen size, graphics card, and browser settings - sites can create a unique ID that follows you even after clearing cookies.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Improve Section -->
+        <section id="improve" class="improve-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>How to Improve Your Score</h2>
+                    <p>Simple steps you can take to better protect your privacy online.</p>
+                </div>
+
+                <div class="improve-grid" id="recommendations-grid">
+                    <!-- Populated by JavaScript based on detected issues -->
                 </div>
             </div>
         </section>
@@ -868,99 +1124,17 @@
 
     <footer>
         <div class="container">
-            <p>Built to educate. Your data never leaves your browser.</p>
-            <p style="margin-top: 10px; font-size: 0.85rem;">
-                <a href="#" id="privacy-link">Privacy Focused</a> • Open Source
+            <p><span class="footer-highlight">Your privacy matters.</span> This tool runs entirely in your browser - we don't collect, store, or transmit any of your data.</p>
+            <p class="footer-links">
+                Built for education and transparency • <a href="https://github.com" target="_blank" rel="noopener">Open Source</a>
             </p>
         </div>
     </footer>
 
-    <!-- Easter Egg Modal -->
-    <div class="easter-egg" id="easter-egg">
-        <h2>🎮 Achievement Unlocked!</h2>
-        <p>You found the secret! The Konami Code (↑↑↓↓←→←→BA) still works in 2026. You're clearly someone who pays attention to details - that's exactly the mindset you need to protect your privacy online.</p>
-        <p style="margin-top: 16px; color: var(--primary-green);">Here's a tip: The best privacy tool is skepticism. Question every permission request.</p>
-        <button class="close-easter" onclick="closeEasterEgg()">Continue Browsing</button>
-    </div>
-
-    <div class="konami-hint" id="konami-hint">↑↑↓↓←→←→BA</div>
-
     <script>
         // Privacy Score Calculator
         let privacyScore = 100;
-        let issues = [];
-        let recommendations = [];
-
-        // Konami Code Easter Egg
-        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
-        let konamiIndex = 0;
-        let hintTimeout;
-
-        document.addEventListener('keydown', (e) => {
-            if (e.code === konamiCode[konamiIndex]) {
-                konamiIndex++;
-
-                // Show hint after first correct key
-                if (konamiIndex === 2) {
-                    document.getElementById('konami-hint').classList.add('show');
-                    clearTimeout(hintTimeout);
-                    hintTimeout = setTimeout(() => {
-                        document.getElementById('konami-hint').classList.remove('show');
-                    }, 5000);
-                }
-
-                if (konamiIndex === konamiCode.length) {
-                    activateEasterEgg();
-                    konamiIndex = 0;
-                }
-            } else {
-                konamiIndex = 0;
-            }
-        });
-
-        function activateEasterEgg() {
-            document.getElementById('easter-egg').classList.add('active');
-            document.getElementById('matrix-canvas').classList.add('active');
-            startMatrix();
-        }
-
-        function closeEasterEgg() {
-            document.getElementById('easter-egg').classList.remove('active');
-            document.getElementById('matrix-canvas').classList.remove('active');
-        }
-
-        // Matrix Rain Effect
-        function startMatrix() {
-            const canvas = document.getElementById('matrix-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            const chars = 'PRIVACY01';
-            const fontSize = 14;
-            const columns = canvas.width / fontSize;
-            const drops = Array(Math.floor(columns)).fill(1);
-
-            function draw() {
-                ctx.fillStyle = 'rgba(10, 15, 28, 0.05)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                ctx.fillStyle = '#00d4aa';
-                ctx.font = fontSize + 'px monospace';
-
-                for (let i = 0; i < drops.length; i++) {
-                    const text = chars[Math.floor(Math.random() * chars.length)];
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                        drops[i] = 0;
-                    }
-                    drops[i]++;
-                }
-            }
-
-            setInterval(draw, 33);
-        }
+        let factors = [];
 
         // Browser Detection
         function detectBrowser() {
@@ -1033,12 +1207,17 @@
                 if (gl) {
                     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
                     if (debugInfo) {
-                        return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                        const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                        // Shorten long renderer strings
+                        if (renderer.length > 35) {
+                            return renderer.substring(0, 32) + '...';
+                        }
+                        return renderer;
                     }
                 }
-                return 'WebGL Supported';
+                return 'WebGL Available';
             } catch (e) {
-                return 'Not Available';
+                return 'Blocked';
             }
         }
 
@@ -1047,7 +1226,7 @@
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if (AudioContext) {
-                    return 'Detectable';
+                    return 'Available';
                 }
                 return 'Not Supported';
             } catch (e) {
@@ -1078,22 +1257,19 @@
                 }
             });
 
-            return detected + '+ detected';
+            return detected + '+ fonts';
         }
 
-        // Social Media Detection (checking for common indicators)
+        // Social Media Detection
         function detectSocialLogins() {
             const socials = [
                 { name: 'Google', detected: false },
                 { name: 'Facebook', detected: false },
                 { name: 'Twitter/X', detected: false },
                 { name: 'LinkedIn', detected: false },
-                { name: 'GitHub', detected: false },
-                { name: 'Amazon', detected: false }
+                { name: 'GitHub', detected: false }
             ];
 
-            // Check for various cookies and storage items
-            // Note: This is a simplified demonstration
             const cookies = document.cookie;
 
             if (cookies.includes('SAPISID') || cookies.includes('SSID')) {
@@ -1103,7 +1279,6 @@
                 socials[1].detected = true;
             }
 
-            // Check localStorage for common patterns
             try {
                 for (let i = 0; i < localStorage.length; i++) {
                     const key = localStorage.key(i);
@@ -1151,130 +1326,208 @@
                     const battery = await navigator.getBattery();
                     return {
                         level: Math.round(battery.level * 100) + '%',
-                        charging: battery.charging ? 'Yes' : 'No'
+                        charging: battery.charging ? 'Charging' : 'Not charging'
                     };
                 } catch (e) {
-                    return { level: 'API Blocked', charging: 'API Blocked' };
+                    return { level: 'Protected', charging: '' };
                 }
             }
-            return { level: 'Not Supported', charging: 'Not Supported' };
+            return { level: 'Not accessible', charging: '' };
         }
 
-        // Check sensor permissions
-        function checkSensorAccess(type) {
-            if ('permissions' in navigator) {
-                return navigator.permissions.query({ name: type })
-                    .then(result => result.state)
-                    .catch(() => 'Unknown');
-            }
-            return Promise.resolve('Not Supported');
+        // Add a factor to the score breakdown
+        function addFactor(icon, title, description, impact, type) {
+            factors.push({ icon, title, description, impact, type });
         }
 
-        // Generate recommendations based on issues found
+        // Render factors list
+        function renderFactors() {
+            const container = document.getElementById('factors-list');
+            container.innerHTML = '';
+
+            // Sort: negative first, then neutral, then positive
+            const sorted = factors.sort((a, b) => {
+                const order = { negative: 0, neutral: 1, positive: 2 };
+                return order[a.type] - order[b.type];
+            });
+
+            sorted.slice(0, 6).forEach(factor => {
+                const item = document.createElement('div');
+                item.className = 'factor-item';
+                item.innerHTML = `
+                    <div class="factor-icon ${factor.type}">${factor.icon}</div>
+                    <div class="factor-content">
+                        <div class="factor-title">${factor.title}</div>
+                        <div class="factor-description">${factor.description}</div>
+                    </div>
+                    <div class="factor-impact ${factor.type}">${factor.impact}</div>
+                `;
+                container.appendChild(item);
+            });
+
+            document.getElementById('factors-count').textContent = `${factors.length} factors analyzed`;
+        }
+
+        // Generate recommendations
         function generateRecommendations() {
             const recs = [
                 {
                     icon: '🔒',
                     title: 'Use a VPN',
-                    description: 'Hide your IP address and encrypt your internet connection to prevent tracking.',
-                    condition: true
-                },
-                {
-                    icon: '🦊',
-                    title: 'Switch to Firefox',
-                    description: 'Firefox has better built-in privacy protections than Chrome.',
-                    condition: document.getElementById('browser-name').textContent.includes('Chrome')
+                    description: 'A VPN hides your IP address and encrypts your connection, making it harder to track your location and activity.',
+                    difficulty: 'Easy to set up',
+                    condition: true,
+                    priority: 1
                 },
                 {
                     icon: '🚫',
                     title: 'Install an Ad Blocker',
-                    description: 'Block tracking scripts and ads that monitor your behavior.',
-                    condition: document.getElementById('ad-blocker').textContent === 'Not Detected'
+                    description: 'Ad blockers prevent tracking scripts from loading, significantly reducing the data collected about you.',
+                    difficulty: 'Easy - browser extension',
+                    condition: document.getElementById('ad-blocker').textContent !== 'Active',
+                    priority: 2
+                },
+                {
+                    icon: '🦊',
+                    title: 'Try Firefox or Brave',
+                    description: 'These browsers have stronger built-in privacy protections than Chrome, including tracking prevention.',
+                    difficulty: 'Easy - just download',
+                    condition: document.getElementById('browser-name').textContent.includes('Chrome'),
+                    priority: 3
                 },
                 {
                     icon: '🍪',
                     title: 'Clear Cookies Regularly',
-                    description: 'Remove tracking cookies to reset your digital fingerprint.',
-                    condition: true
-                },
-                {
-                    icon: '📍',
-                    title: 'Disable Location Access',
-                    description: 'Only allow location access for apps that truly need it.',
-                    condition: true
-                },
-                {
-                    icon: '🔐',
-                    title: 'Use Private Browsing',
-                    description: 'Open sensitive sessions in incognito/private mode.',
-                    condition: true
-                },
-                {
-                    icon: '📱',
-                    title: 'Review App Permissions',
-                    description: 'Revoke unnecessary camera, microphone, and sensor permissions.',
-                    condition: true
+                    description: 'Periodically clearing cookies removes tracking data and forces advertisers to start fresh.',
+                    difficulty: 'Easy - in browser settings',
+                    condition: true,
+                    priority: 4
                 },
                 {
                     icon: '🔄',
                     title: 'Log Out of Social Media',
-                    description: 'Stay logged out of social platforms when not using them to prevent cross-site tracking.',
-                    condition: true
+                    description: 'When not using social platforms, logging out prevents them from tracking your activity across other sites.',
+                    difficulty: 'Easy - but requires habit',
+                    condition: true,
+                    priority: 5
+                },
+                {
+                    icon: '🔐',
+                    title: 'Use Private Browsing',
+                    description: 'Private/incognito mode doesn\'t save history and limits some tracking. Good for sensitive browsing.',
+                    difficulty: 'Easy - Ctrl/Cmd + Shift + N',
+                    condition: true,
+                    priority: 6
                 },
                 {
                     icon: '🌐',
-                    title: 'Use Privacy-Focused Search',
-                    description: 'Switch to DuckDuckGo or Brave Search instead of Google.',
-                    condition: true
+                    title: 'Switch Search Engines',
+                    description: 'DuckDuckGo and Brave Search don\'t track your searches or build a profile of your interests.',
+                    difficulty: 'Easy to try',
+                    condition: true,
+                    priority: 7
                 },
                 {
-                    icon: '✉️',
-                    title: 'Use Email Aliases',
-                    description: 'Create email aliases for different services to prevent tracking.',
-                    condition: true
+                    icon: '📍',
+                    title: 'Review Location Permissions',
+                    description: 'Check which sites have location access in your browser settings and revoke any you don\'t need.',
+                    difficulty: 'Easy - in browser settings',
+                    condition: document.getElementById('geolocation').textContent === 'Available',
+                    priority: 8
                 }
             ];
 
             const grid = document.getElementById('recommendations-grid');
             grid.innerHTML = '';
 
-            recs.filter(r => r.condition).slice(0, 8).forEach(rec => {
-                const item = document.createElement('div');
-                item.className = 'rec-item';
-                item.innerHTML = `
-                    <div class="rec-icon">${rec.icon}</div>
-                    <div class="rec-content">
+            recs.filter(r => r.condition)
+                .sort((a, b) => a.priority - b.priority)
+                .slice(0, 8)
+                .forEach(rec => {
+                    const item = document.createElement('div');
+                    item.className = 'improve-item';
+                    item.innerHTML = `
+                        <div class="improve-icon">${rec.icon}</div>
                         <h4>${rec.title}</h4>
                         <p>${rec.description}</p>
-                    </div>
-                `;
-                grid.appendChild(item);
-            });
+                        <div class="improve-difficulty">⏱️ ${rec.difficulty}</div>
+                    `;
+                    grid.appendChild(item);
+                });
         }
 
         // Calculate and update privacy score
         function updatePrivacyScore() {
             let score = 100;
+            factors = [];
 
-            // Deductions based on findings
-            if (document.getElementById('cookies-enabled').textContent === 'Yes') score -= 5;
-            if (document.getElementById('third-party-cookies').textContent === 'Allowed') score -= 10;
-            if (document.getElementById('dnt-status').textContent === 'Not Enabled') score -= 5;
-            if (document.getElementById('ad-blocker').textContent === 'Not Detected') score -= 15;
-            if (document.getElementById('local-storage').textContent === 'Available') score -= 3;
-            if (document.getElementById('webgl-renderer').textContent !== 'Not Available') score -= 8;
-            if (document.getElementById('canvas-fp').textContent !== 'Blocked') score -= 8;
-            if (document.getElementById('vpn-status').textContent === 'No') score -= 10;
-            if (document.getElementById('geolocation').textContent === 'Available') score -= 5;
+            // Check cookies
+            if (document.getElementById('cookies-enabled').textContent === 'Enabled') {
+                score -= 3;
+                addFactor('🍪', 'Cookies Enabled', 'Standard for most browsing, but allows tracking', '-3', 'neutral');
+            }
 
-            // Social media deductions
+            // Third-party cookies
+            if (document.getElementById('third-party-cookies').textContent === 'Likely allowed') {
+                score -= 10;
+                addFactor('🔗', 'Third-Party Cookies', 'Allows cross-site tracking by advertisers', '-10', 'negative');
+            }
+
+            // Do Not Track
+            if (document.getElementById('dnt-status').textContent === 'Not enabled') {
+                score -= 3;
+                addFactor('🚫', 'Do Not Track Off', 'DNT signal not sent (though often ignored)', '-3', 'neutral');
+            } else {
+                addFactor('✓', 'Do Not Track On', 'Browser sends DNT signal to sites', '+0', 'positive');
+            }
+
+            // Ad blocker
+            if (document.getElementById('ad-blocker').textContent === 'Not detected') {
+                score -= 15;
+                addFactor('📢', 'No Ad Blocker', 'Tracking scripts can load freely', '-15', 'negative');
+            } else {
+                score += 5;
+                addFactor('🛡️', 'Ad Blocker Active', 'Many tracking scripts are blocked', '+5', 'positive');
+            }
+
+            // WebGL
+            if (document.getElementById('webgl-renderer').textContent !== 'Blocked') {
+                score -= 5;
+                addFactor('🎨', 'WebGL Exposed', 'Graphics card info adds to fingerprint', '-5', 'neutral');
+            }
+
+            // Canvas fingerprint
+            if (document.getElementById('canvas-fp').textContent !== 'Blocked') {
+                score -= 8;
+                addFactor('🖼️', 'Canvas Accessible', 'Can be used to create unique fingerprint', '-8', 'negative');
+            }
+
+            // VPN
+            if (document.getElementById('vpn-status').textContent === 'No') {
+                score -= 10;
+                addFactor('🌍', 'No VPN Detected', 'Your real IP and location are visible', '-10', 'negative');
+            } else if (document.getElementById('vpn-status').textContent === 'Possibly') {
+                addFactor('🔒', 'VPN Possibly Active', 'Your IP may be masked', '+0', 'positive');
+            }
+
+            // Location API
+            if (document.getElementById('geolocation').textContent === 'Available') {
+                score -= 3;
+                addFactor('📍', 'Location API Available', 'Sites can request precise location', '-3', 'neutral');
+            }
+
+            // Social media
             const socialBadges = document.querySelectorAll('.social-badge.detected');
-            score -= socialBadges.length * 5;
+            if (socialBadges.length > 0) {
+                score -= socialBadges.length * 4;
+                addFactor('👤', `${socialBadges.length} Social Login(s)`, 'Logged-in platforms can track you', `-${socialBadges.length * 4}`, 'negative');
+            }
 
             score = Math.max(0, Math.min(100, score));
 
             const scoreEl = document.getElementById('privacy-score');
             const statusEl = document.getElementById('score-status');
+            const explanationEl = document.getElementById('score-explanation');
 
             // Animate score
             let current = 0;
@@ -1287,23 +1540,33 @@
                 scoreEl.textContent = current;
             }, 20);
 
-            // Update status
-            if (score >= 70) {
-                statusEl.textContent = '✓ Good Privacy';
+            // Update status and explanation
+            if (score >= 80) {
+                statusEl.textContent = 'Excellent Protection';
+                statusEl.className = 'score-status excellent';
+                explanationEl.textContent = 'Your browser is well-configured for privacy. You\'re sharing minimal information with websites.';
+            } else if (score >= 60) {
+                statusEl.textContent = 'Good Protection';
                 statusEl.className = 'score-status good';
+                explanationEl.textContent = 'Your privacy settings are decent, but there are a few areas where you could improve protection.';
             } else if (score >= 40) {
-                statusEl.textContent = '⚠ Fair Privacy';
+                statusEl.textContent = 'Fair Protection';
                 statusEl.className = 'score-status fair';
+                explanationEl.textContent = 'Your browser reveals quite a bit of information. Consider the suggestions below to improve.';
             } else {
-                statusEl.textContent = '✗ Poor Privacy';
+                statusEl.textContent = 'Needs Improvement';
                 statusEl.className = 'score-status poor';
+                explanationEl.textContent = 'Your browser configuration leaves you quite exposed to tracking. The good news? Small changes can make a big difference.';
             }
 
             // Hide scanning animation
             document.getElementById('scanning').style.display = 'none';
 
-            // Update fingerprint bar
+            // Update fingerprint bar (represents uniqueness risk)
             document.getElementById('fp-bar').style.width = (100 - score) + '%';
+
+            // Render factors
+            renderFactors();
         }
 
         // Main initialization
@@ -1314,81 +1577,67 @@
             document.getElementById('device-type').textContent = detectDeviceType();
             document.getElementById('screen-res').textContent = `${screen.width} × ${screen.height}`;
             document.getElementById('color-depth').textContent = `${screen.colorDepth}-bit`;
-            document.getElementById('device-memory').textContent = navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'Not Available';
-            document.getElementById('cpu-cores').textContent = navigator.hardwareConcurrency || 'Not Available';
-            document.getElementById('touch-support').textContent = ('ontouchstart' in window) ? 'Yes' : 'No';
+            document.getElementById('cpu-cores').textContent = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} cores` : 'Not available';
 
             // Timezone and language
             document.getElementById('timezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
             document.getElementById('language').textContent = navigator.language;
 
-            // Connection info
-            if (navigator.connection) {
-                document.getElementById('connection-type').textContent = navigator.connection.effectiveType?.toUpperCase() || 'Unknown';
-            } else {
-                document.getElementById('connection-type').textContent = 'Not Available';
-            }
-
             // Storage and cookies
-            document.getElementById('cookies-enabled').textContent = navigator.cookieEnabled ? 'Yes' : 'No';
+            document.getElementById('cookies-enabled').textContent = navigator.cookieEnabled ? 'Enabled' : 'Disabled';
             document.getElementById('local-storage').textContent = (typeof localStorage !== 'undefined') ? 'Available' : 'Blocked';
             document.getElementById('session-storage').textContent = (typeof sessionStorage !== 'undefined') ? 'Available' : 'Blocked';
-            document.getElementById('indexed-db').textContent = (typeof indexedDB !== 'undefined') ? 'Available' : 'Blocked';
-            document.getElementById('dnt-status').textContent = navigator.doNotTrack === '1' ? 'Enabled ✓' : 'Not Enabled';
+            document.getElementById('dnt-status').textContent = navigator.doNotTrack === '1' ? 'Enabled' : 'Not enabled';
 
-            // Third-party cookies check
-            document.getElementById('third-party-cookies').textContent = navigator.cookieEnabled ? 'Likely Allowed' : 'Blocked';
+            // Third-party cookies
+            document.getElementById('third-party-cookies').textContent = navigator.cookieEnabled ? 'Likely allowed' : 'Blocked';
 
             // Fingerprinting
             document.getElementById('canvas-fp').textContent = getCanvasFingerprint();
             document.getElementById('webgl-renderer').textContent = getWebGLRenderer();
             document.getElementById('audio-fp').textContent = getAudioFingerprint();
             document.getElementById('fonts-count').textContent = detectFonts();
-            document.getElementById('plugins-count').textContent = navigator.plugins.length + ' plugins';
-            document.getElementById('uniqueness').textContent = 'Likely Unique';
+            document.getElementById('uniqueness').textContent = 'Likely unique';
 
             // Ad blocker
             const hasAdBlocker = await detectAdBlocker();
-            document.getElementById('ad-blocker').textContent = hasAdBlocker ? 'Detected ✓' : 'Not Detected';
+            document.getElementById('ad-blocker').textContent = hasAdBlocker ? 'Active' : 'Not detected';
 
             // Social media detection
             const socials = detectSocialLogins();
             const socialContainer = document.getElementById('social-detection');
             socialContainer.innerHTML = socials.map(s => `
                 <div class="social-badge ${s.detected ? 'detected' : 'not-detected'}">
-                    ${s.detected ? '⚠️' : '✓'} ${s.name}
+                    ${s.detected ? '●' : '○'} ${s.name}
                 </div>
             `).join('');
 
             // Battery
             const battery = await getBatteryInfo();
-            document.getElementById('battery-level').textContent = battery.level;
-            document.getElementById('charging-status').textContent = battery.charging;
+            document.getElementById('battery-level').textContent = battery.level + (battery.charging ? ` (${battery.charging})` : '');
 
             // Sensors
-            document.getElementById('accelerometer').textContent = (window.DeviceMotionEvent) ? 'Available' : 'Not Available';
-            document.getElementById('gyroscope').textContent = (window.DeviceOrientationEvent) ? 'Available' : 'Not Available';
+            document.getElementById('accelerometer').textContent = (window.DeviceMotionEvent) ? 'Available' : 'Not available';
 
             // Media devices
             if (navigator.mediaDevices) {
-                document.getElementById('camera-access').textContent = 'Available to Request';
-                document.getElementById('mic-access').textContent = 'Available to Request';
+                document.getElementById('camera-access').textContent = 'Can request';
+                document.getElementById('mic-access').textContent = 'Can request';
             } else {
-                document.getElementById('camera-access').textContent = 'Not Available';
-                document.getElementById('mic-access').textContent = 'Not Available';
+                document.getElementById('camera-access').textContent = 'Not available';
+                document.getElementById('mic-access').textContent = 'Not available';
             }
 
             // Geolocation
-            document.getElementById('geolocation').textContent = ('geolocation' in navigator) ? 'Available' : 'Not Available';
+            document.getElementById('geolocation').textContent = ('geolocation' in navigator) ? 'Available' : 'Not available';
 
             // IP and location
             const ipInfo = await getIPInfo();
             if (ipInfo) {
                 document.getElementById('ip-address').textContent = ipInfo.ip;
-                document.getElementById('location').textContent = `${ipInfo.city}, ${ipInfo.region}, ${ipInfo.country_name}`;
+                document.getElementById('location').textContent = `${ipInfo.city}, ${ipInfo.region}`;
                 document.getElementById('isp').textContent = ipInfo.org || 'Unknown';
 
-                // Basic VPN detection (not always accurate)
                 const isVPN = ipInfo.org?.toLowerCase().includes('vpn') ||
                               ipInfo.org?.toLowerCase().includes('proxy') ||
                               ipInfo.org?.toLowerCase().includes('hosting');
@@ -1400,11 +1649,11 @@
                 document.getElementById('vpn-status').textContent = 'Unknown';
             }
 
-            // Generate recommendations
+            // Generate recommendations and update score
             setTimeout(() => {
                 generateRecommendations();
                 updatePrivacyScore();
-            }, 1500);
+            }, 1200);
         }
 
         // Start when DOM is ready
