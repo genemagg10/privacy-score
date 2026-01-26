@@ -250,6 +250,19 @@
             line-height: 1.6;
         }
 
+        .device-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .device-indicator .device-icon {
+            font-size: 1rem;
+        }
+
         .scanning {
             display: flex;
             align-items: center;
@@ -640,6 +653,73 @@
             margin-top: 12px;
         }
 
+        .improve-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .improve-header .improve-icon {
+            margin-bottom: 0;
+        }
+
+        .device-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .device-badge.mobile {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .device-badge.desktop {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .device-badge.all {
+            background: rgba(100, 116, 139, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .improve-item.relevant {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 1px var(--primary-blue), 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .improve-item.relevant::before {
+            content: 'Recommended for you';
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            background: var(--primary-blue);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .improve-item {
+            position: relative;
+        }
+
+        .device-type-highlight {
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
         /* How It Works Section */
         .how-section {
             padding: 60px 0;
@@ -821,6 +901,7 @@
                             </div>
                         </div>
                         <div class="score-status" id="score-status">Analyzing...</div>
+                        <div class="device-indicator" id="device-indicator"></div>
                         <p class="score-explanation" id="score-explanation">
                             Your privacy score reflects how much information your browser reveals to websites. A higher score means better privacy protection.
                         </p>
@@ -930,9 +1011,13 @@
                                 <span class="data-label">VPN Detected</span>
                                 <span class="data-value" id="vpn-status">Checking...</span>
                             </div>
+                            <div class="data-item">
+                                <span class="data-label">Precise Location</span>
+                                <span class="data-value" id="precise-location">Checking...</span>
+                            </div>
                             <div class="edu-callout">
                                 <div class="edu-callout-title">💡 How IP tracking works</div>
-                                <div class="edu-callout-text">Your IP address is like a return address on mail - websites need it to send you data. A VPN masks this by routing traffic through their servers instead.</div>
+                                <div class="edu-callout-text">Your IP address is like a return address on mail - websites need it to send you data. A VPN masks this by routing traffic through their servers instead. Precise GPS location (especially on mobile) can pinpoint you within meters.</div>
                             </div>
                         </div>
                     </div>
@@ -1112,7 +1197,7 @@
             <div class="container">
                 <div class="section-header">
                     <h2>How to Improve Your Score</h2>
-                    <p>Simple steps you can take to better protect your privacy online.</p>
+                    <p>Personalized recommendations for your <span id="device-type-label" class="device-type-highlight">device</span>. Highlighted items are most relevant to you.</p>
                 </div>
 
                 <div class="improve-grid" id="recommendations-grid">
@@ -1135,6 +1220,8 @@
         // Privacy Score Calculator
         let privacyScore = 100;
         let factors = [];
+        let deviceType = 'Desktop';
+        let preciseLocationResult = null; // 'granted', 'denied', 'unavailable', 'prompt'
 
         // Browser Detection
         function detectBrowser() {
@@ -1174,6 +1261,139 @@
             if (/tablet|ipad|playbook|silk/i.test(ua)) return 'Tablet';
             if (/mobile|iphone|ipod|android|blackberry|opera mini|iemobile/i.test(ua)) return 'Mobile';
             return 'Desktop';
+        }
+
+        // Check precise geolocation permission and request if needed
+        async function checkPreciseLocation() {
+            const statusEl = document.getElementById('geolocation');
+            const preciseEl = document.getElementById('precise-location');
+
+            if (!('geolocation' in navigator)) {
+                preciseLocationResult = 'unavailable';
+                if (preciseEl) preciseEl.textContent = 'Not available';
+                return 'unavailable';
+            }
+
+            // First check if we can query permission status
+            if ('permissions' in navigator) {
+                try {
+                    const permission = await navigator.permissions.query({ name: 'geolocation' });
+
+                    if (permission.state === 'denied') {
+                        preciseLocationResult = 'denied';
+                        if (preciseEl) {
+                            preciseEl.innerHTML = '<span class="status-badge protected">Blocked</span>';
+                        }
+                        return 'denied';
+                    } else if (permission.state === 'granted') {
+                        // Already granted - test if we can get precise location
+                        return await testPreciseLocation(preciseEl);
+                    } else {
+                        // prompt state - we'll ask for permission
+                        return await requestPreciseLocation(preciseEl);
+                    }
+                } catch (e) {
+                    // permissions API not fully supported, try direct request
+                    return await requestPreciseLocation(preciseEl);
+                }
+            } else {
+                return await requestPreciseLocation(preciseEl);
+            }
+        }
+
+        // Test precise location access
+        async function testPreciseLocation(preciseEl) {
+            return new Promise((resolve) => {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Successfully got precise location
+                        const accuracy = position.coords.accuracy;
+                        preciseLocationResult = 'granted';
+                        if (preciseEl) {
+                            if (accuracy < 100) {
+                                preciseEl.innerHTML = `<span class="status-badge concern">Exposed (±${Math.round(accuracy)}m)</span>`;
+                            } else {
+                                preciseEl.innerHTML = `<span class="status-badge exposed">Available (±${Math.round(accuracy)}m)</span>`;
+                            }
+                        }
+                        resolve('granted');
+                    },
+                    (error) => {
+                        if (error.code === error.PERMISSION_DENIED) {
+                            preciseLocationResult = 'denied';
+                            if (preciseEl) {
+                                preciseEl.innerHTML = '<span class="status-badge protected">Blocked by user</span>';
+                            }
+                            resolve('denied');
+                        } else {
+                            preciseLocationResult = 'unavailable';
+                            if (preciseEl) {
+                                preciseEl.innerHTML = '<span class="status-badge protected">Unavailable</span>';
+                            }
+                            resolve('unavailable');
+                        }
+                    },
+                    options
+                );
+            });
+        }
+
+        // Request precise location permission
+        async function requestPreciseLocation(preciseEl) {
+            if (preciseEl) {
+                preciseEl.innerHTML = '<span style="color: var(--text-muted);">Requesting permission...</span>';
+            }
+
+            return new Promise((resolve) => {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const accuracy = position.coords.accuracy;
+                        preciseLocationResult = 'granted';
+                        if (preciseEl) {
+                            if (accuracy < 100) {
+                                preciseEl.innerHTML = `<span class="status-badge concern">Exposed (±${Math.round(accuracy)}m)</span>`;
+                            } else {
+                                preciseEl.innerHTML = `<span class="status-badge exposed">Available (±${Math.round(accuracy)}m)</span>`;
+                            }
+                        }
+                        resolve('granted');
+                    },
+                    (error) => {
+                        if (error.code === error.PERMISSION_DENIED) {
+                            preciseLocationResult = 'denied';
+                            if (preciseEl) {
+                                preciseEl.innerHTML = '<span class="status-badge protected">Blocked</span>';
+                            }
+                            resolve('denied');
+                        } else if (error.code === error.TIMEOUT) {
+                            preciseLocationResult = 'denied';
+                            if (preciseEl) {
+                                preciseEl.innerHTML = '<span class="status-badge protected">Timed out</span>';
+                            }
+                            resolve('denied');
+                        } else {
+                            preciseLocationResult = 'unavailable';
+                            if (preciseEl) {
+                                preciseEl.innerHTML = '<span class="status-badge protected">Unavailable</span>';
+                            }
+                            resolve('unavailable');
+                        }
+                    },
+                    options
+                );
+            });
         }
 
         // Canvas Fingerprint
@@ -1370,30 +1590,18 @@
 
         // Generate recommendations
         function generateRecommendations() {
+            const isMobile = deviceType === 'Mobile' || deviceType === 'Tablet';
+
             const recs = [
+                // Universal recommendations
                 {
                     icon: '🔒',
                     title: 'Use a VPN',
                     description: 'A VPN hides your IP address and encrypts your connection, making it harder to track your location and activity.',
                     difficulty: 'Easy to set up',
                     condition: true,
-                    priority: 1
-                },
-                {
-                    icon: '🚫',
-                    title: 'Install an Ad Blocker',
-                    description: 'Ad blockers prevent tracking scripts from loading, significantly reducing the data collected about you.',
-                    difficulty: 'Easy - browser extension',
-                    condition: document.getElementById('ad-blocker').textContent !== 'Active',
-                    priority: 2
-                },
-                {
-                    icon: '🦊',
-                    title: 'Try Firefox or Brave',
-                    description: 'These browsers have stronger built-in privacy protections than Chrome, including tracking prevention.',
-                    difficulty: 'Easy - just download',
-                    condition: document.getElementById('browser-name').textContent.includes('Chrome'),
-                    priority: 3
+                    priority: 1,
+                    deviceType: 'all'
                 },
                 {
                     icon: '🍪',
@@ -1401,7 +1609,8 @@
                     description: 'Periodically clearing cookies removes tracking data and forces advertisers to start fresh.',
                     difficulty: 'Easy - in browser settings',
                     condition: true,
-                    priority: 4
+                    priority: 4,
+                    deviceType: 'all'
                 },
                 {
                     icon: '🔄',
@@ -1409,15 +1618,8 @@
                     description: 'When not using social platforms, logging out prevents them from tracking your activity across other sites.',
                     difficulty: 'Easy - but requires habit',
                     condition: true,
-                    priority: 5
-                },
-                {
-                    icon: '🔐',
-                    title: 'Use Private Browsing',
-                    description: 'Private/incognito mode doesn\'t save history and limits some tracking. Good for sensitive browsing.',
-                    difficulty: 'Easy - Ctrl/Cmd + Shift + N',
-                    condition: true,
-                    priority: 6
+                    priority: 5,
+                    deviceType: 'all'
                 },
                 {
                     icon: '🌐',
@@ -1425,41 +1627,181 @@
                     description: 'DuckDuckGo and Brave Search don\'t track your searches or build a profile of your interests.',
                     difficulty: 'Easy to try',
                     condition: true,
-                    priority: 7
+                    priority: 7,
+                    deviceType: 'all'
                 },
+
+                // Desktop-specific recommendations
+                {
+                    icon: '🚫',
+                    title: 'Install uBlock Origin',
+                    description: 'The most effective ad and tracker blocker for desktop browsers. Blocks scripts before they load.',
+                    difficulty: 'Easy - browser extension',
+                    condition: document.getElementById('ad-blocker').textContent !== 'Active' && !isMobile,
+                    priority: 2,
+                    deviceType: 'desktop'
+                },
+                {
+                    icon: '🦊',
+                    title: 'Try Firefox or Brave',
+                    description: 'These desktop browsers have stronger built-in privacy protections, including Enhanced Tracking Protection.',
+                    difficulty: 'Easy - just download',
+                    condition: document.getElementById('browser-name').textContent.includes('Chrome') && !isMobile,
+                    priority: 3,
+                    deviceType: 'desktop'
+                },
+                {
+                    icon: '🔐',
+                    title: 'Use Private Browsing',
+                    description: 'Private/incognito mode doesn\'t save history and limits some tracking. Good for sensitive browsing.',
+                    difficulty: 'Easy - Ctrl/Cmd + Shift + N',
+                    condition: !isMobile,
+                    priority: 6,
+                    deviceType: 'desktop'
+                },
+                {
+                    icon: '📦',
+                    title: 'Use Container Tabs',
+                    description: 'Firefox containers isolate sites from each other, preventing cross-site tracking within your browser.',
+                    difficulty: 'Medium - requires Firefox',
+                    condition: !isMobile,
+                    priority: 9,
+                    deviceType: 'desktop'
+                },
+                {
+                    icon: '🎨',
+                    title: 'Block Canvas Fingerprinting',
+                    description: 'Extensions like CanvasBlocker randomize your canvas fingerprint, making tracking harder.',
+                    difficulty: 'Easy - browser extension',
+                    condition: document.getElementById('canvas-fp').textContent !== 'Blocked' && !isMobile,
+                    priority: 10,
+                    deviceType: 'desktop'
+                },
+
+                // Mobile-specific recommendations
+                {
+                    icon: '📱',
+                    title: 'Try Firefox Focus or DuckDuckGo Browser',
+                    description: 'Privacy-first mobile browsers that block trackers by default and clear data when you close them.',
+                    difficulty: 'Easy - download from app store',
+                    condition: isMobile,
+                    priority: 2,
+                    deviceType: 'mobile'
+                },
+                {
+                    icon: '🚫',
+                    title: 'Use Brave Browser for Mobile',
+                    description: 'Brave blocks ads and trackers by default on mobile, without needing separate extensions.',
+                    difficulty: 'Easy - download from app store',
+                    condition: isMobile && document.getElementById('ad-blocker').textContent !== 'Active',
+                    priority: 3,
+                    deviceType: 'mobile'
+                },
+                {
+                    icon: '📍',
+                    title: 'Disable Location Services',
+                    description: 'Turn off GPS/location for your browser in device settings. Most sites don\'t need your precise location.',
+                    difficulty: 'Easy - in device settings',
+                    condition: isMobile && preciseLocationResult !== 'denied',
+                    priority: 1,
+                    deviceType: 'mobile'
+                },
+                {
+                    icon: '🔋',
+                    title: 'Review App Permissions',
+                    description: 'Check which apps have access to sensors, location, and other data in your phone\'s privacy settings.',
+                    difficulty: 'Easy - in device settings',
+                    condition: isMobile,
+                    priority: 8,
+                    deviceType: 'mobile'
+                },
+                {
+                    icon: '📶',
+                    title: 'Use Wi-Fi Instead of Cellular',
+                    description: 'Mobile carriers can track more data. Using Wi-Fi with a VPN provides better privacy.',
+                    difficulty: 'Easy when available',
+                    condition: isMobile,
+                    priority: 11,
+                    deviceType: 'mobile'
+                },
+                {
+                    icon: '🔒',
+                    title: 'Enable Private Relay (iOS) or VPN',
+                    description: 'Apple\'s Private Relay hides your IP. On Android, use a trusted VPN app for similar protection.',
+                    difficulty: 'Easy - in settings or app',
+                    condition: isMobile,
+                    priority: 6,
+                    deviceType: 'mobile'
+                },
+
+                // Location-specific (both platforms, but higher priority on mobile)
                 {
                     icon: '📍',
                     title: 'Review Location Permissions',
                     description: 'Check which sites have location access in your browser settings and revoke any you don\'t need.',
                     difficulty: 'Easy - in browser settings',
-                    condition: document.getElementById('geolocation').textContent === 'Available',
-                    priority: 8
+                    condition: !isMobile && preciseLocationResult === 'granted',
+                    priority: 8,
+                    deviceType: 'desktop'
                 }
             ];
 
             const grid = document.getElementById('recommendations-grid');
             grid.innerHTML = '';
 
-            recs.filter(r => r.condition)
+            // Update device type label in section header
+            const deviceLabel = document.getElementById('device-type-label');
+            if (deviceLabel) {
+                deviceLabel.textContent = isMobile ? 'mobile device' : 'desktop browser';
+            }
+
+            // Filter and sort recommendations
+            const filteredRecs = recs
+                .filter(r => r.condition)
                 .sort((a, b) => a.priority - b.priority)
-                .slice(0, 8)
-                .forEach(rec => {
-                    const item = document.createElement('div');
-                    item.className = 'improve-item';
-                    item.innerHTML = `
+                .slice(0, 8);
+
+            filteredRecs.forEach(rec => {
+                const item = document.createElement('div');
+                item.className = 'improve-item';
+
+                // Add device badge
+                let deviceBadge = '';
+                if (rec.deviceType === 'mobile') {
+                    deviceBadge = '<span class="device-badge mobile">📱 Mobile</span>';
+                } else if (rec.deviceType === 'desktop') {
+                    deviceBadge = '<span class="device-badge desktop">💻 Desktop</span>';
+                } else {
+                    deviceBadge = '<span class="device-badge all">✓ All Devices</span>';
+                }
+
+                // Highlight if relevant to current device
+                const isRelevant = rec.deviceType === 'all' ||
+                    (rec.deviceType === 'mobile' && isMobile) ||
+                    (rec.deviceType === 'desktop' && !isMobile);
+
+                if (isRelevant && rec.deviceType !== 'all') {
+                    item.classList.add('relevant');
+                }
+
+                item.innerHTML = `
+                    <div class="improve-header">
                         <div class="improve-icon">${rec.icon}</div>
-                        <h4>${rec.title}</h4>
-                        <p>${rec.description}</p>
-                        <div class="improve-difficulty">⏱️ ${rec.difficulty}</div>
-                    `;
-                    grid.appendChild(item);
-                });
+                        ${deviceBadge}
+                    </div>
+                    <h4>${rec.title}</h4>
+                    <p>${rec.description}</p>
+                    <div class="improve-difficulty">⏱️ ${rec.difficulty}</div>
+                `;
+                grid.appendChild(item);
+            });
         }
 
         // Calculate and update privacy score
         function updatePrivacyScore() {
             let score = 100;
             factors = [];
+            const isMobile = deviceType === 'Mobile' || deviceType === 'Tablet';
 
             // Check cookies
             if (document.getElementById('cookies-enabled').textContent === 'Enabled') {
@@ -1490,10 +1832,11 @@
                 addFactor('🛡️', 'Ad Blocker Active', 'Many tracking scripts are blocked', '+5', 'positive');
             }
 
-            // WebGL
+            // WebGL - more significant on desktop due to discrete GPUs
             if (document.getElementById('webgl-renderer').textContent !== 'Blocked') {
-                score -= 5;
-                addFactor('🎨', 'WebGL Exposed', 'Graphics card info adds to fingerprint', '-5', 'neutral');
+                const webglPenalty = isMobile ? 3 : 7;
+                score -= webglPenalty;
+                addFactor('🎨', 'WebGL Exposed', isMobile ? 'Graphics info visible (less unique on mobile)' : 'Discrete GPU creates unique fingerprint', `-${webglPenalty}`, 'neutral');
             }
 
             // Canvas fingerprint
@@ -1510,10 +1853,41 @@
                 addFactor('🔒', 'VPN Possibly Active', 'Your IP may be masked', '+0', 'positive');
             }
 
-            // Location API
-            if (document.getElementById('geolocation').textContent === 'Available') {
+            // Precise Location - much more significant on mobile
+            if (preciseLocationResult === 'granted') {
+                const locationPenalty = isMobile ? 20 : 8;
+                score -= locationPenalty;
+                addFactor('📍', 'Precise Location Exposed', isMobile ? 'GPS can pinpoint you within meters' : 'Browser shared your precise location', `-${locationPenalty}`, 'negative');
+            } else if (preciseLocationResult === 'denied') {
+                const locationBonus = isMobile ? 10 : 5;
+                score += locationBonus;
+                addFactor('📍', 'Location Protected', isMobile ? 'GPS access blocked - excellent mobile privacy' : 'Precise location access denied', `+${locationBonus}`, 'positive');
+            } else if (document.getElementById('geolocation').textContent === 'Available') {
                 score -= 3;
                 addFactor('📍', 'Location API Available', 'Sites can request precise location', '-3', 'neutral');
+            }
+
+            // Motion sensors - mobile only
+            if (isMobile && document.getElementById('accelerometer').textContent === 'Available') {
+                score -= 6;
+                addFactor('📱', 'Motion Sensors Exposed', 'Accelerometer data can fingerprint your device', '-6', 'negative');
+            }
+
+            // Battery API - more revealing on mobile
+            const batteryText = document.getElementById('battery-level').textContent;
+            if (batteryText && !batteryText.includes('Not accessible') && !batteryText.includes('Protected')) {
+                const batteryPenalty = isMobile ? 5 : 2;
+                score -= batteryPenalty;
+                addFactor('🔋', 'Battery Status Exposed', isMobile ? 'Battery level can identify your device' : 'Battery info adds to fingerprint', `-${batteryPenalty}`, 'neutral');
+            }
+
+            // Touch capability - mobile fingerprinting
+            if (isMobile && ('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+                const touchPoints = navigator.maxTouchPoints || 0;
+                if (touchPoints > 1) {
+                    score -= 3;
+                    addFactor('👆', 'Touch Fingerprinting', `${touchPoints} touch points can identify device model`, '-3', 'neutral');
+                }
             }
 
             // Social media
@@ -1521,6 +1895,13 @@
             if (socialBadges.length > 0) {
                 score -= socialBadges.length * 4;
                 addFactor('👤', `${socialBadges.length} Social Login(s)`, 'Logged-in platforms can track you', `-${socialBadges.length * 4}`, 'negative');
+            }
+
+            // Device-specific bonus/penalty summary
+            if (isMobile) {
+                addFactor('📱', 'Mobile Device', 'Mobile browsers have unique privacy challenges', '±0', 'neutral');
+            } else {
+                addFactor('💻', 'Desktop Device', 'Desktop browsers have more fingerprinting surface', '±0', 'neutral');
             }
 
             score = Math.max(0, Math.min(100, score));
@@ -1562,6 +1943,14 @@
             // Hide scanning animation
             document.getElementById('scanning').style.display = 'none';
 
+            // Update device indicator
+            const deviceIndicator = document.getElementById('device-indicator');
+            if (deviceIndicator) {
+                const icon = isMobile ? '📱' : '💻';
+                const label = isMobile ? 'Mobile analysis' : 'Desktop analysis';
+                deviceIndicator.innerHTML = `<span class="device-icon">${icon}</span> ${label}`;
+            }
+
             // Update fingerprint bar (represents uniqueness risk)
             document.getElementById('fp-bar').style.width = (100 - score) + '%';
 
@@ -1571,10 +1960,13 @@
 
         // Main initialization
         async function init() {
+            // Detect and store device type globally
+            deviceType = detectDeviceType();
+
             // Basic browser info
             document.getElementById('browser-name').textContent = detectBrowser();
             document.getElementById('os-name').textContent = detectOS();
-            document.getElementById('device-type').textContent = detectDeviceType();
+            document.getElementById('device-type').textContent = deviceType;
             document.getElementById('screen-res').textContent = `${screen.width} × ${screen.height}`;
             document.getElementById('color-depth').textContent = `${screen.colorDepth}-bit`;
             document.getElementById('cpu-cores').textContent = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} cores` : 'Not available';
@@ -1628,10 +2020,10 @@
                 document.getElementById('mic-access').textContent = 'Not available';
             }
 
-            // Geolocation
+            // Geolocation API availability
             document.getElementById('geolocation').textContent = ('geolocation' in navigator) ? 'Available' : 'Not available';
 
-            // IP and location
+            // IP and location (approximate from IP)
             const ipInfo = await getIPInfo();
             if (ipInfo) {
                 document.getElementById('ip-address').textContent = ipInfo.ip;
@@ -1649,11 +2041,15 @@
                 document.getElementById('vpn-status').textContent = 'Unknown';
             }
 
+            // Check precise location permission (will prompt user)
+            // This is especially important on mobile where GPS can be very accurate
+            await checkPreciseLocation();
+
             // Generate recommendations and update score
             setTimeout(() => {
                 generateRecommendations();
                 updatePrivacyScore();
-            }, 1200);
+            }, 500);
         }
 
         // Start when DOM is ready
